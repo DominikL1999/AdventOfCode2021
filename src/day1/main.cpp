@@ -18,10 +18,21 @@ int main() {
         depths.push_back(x);
     }
 
+    // solution 1
     assert(depths.size() >= 1);
     int count = 0;
     for (int i = 1; i < depths.size(); i++) {
         if (depths[i - 1] < depths[i])
+            count++;
+    }
+
+    cout << "Number of increases: " << count << endl;
+
+    // solution 2
+    assert(depths.size() >= 3);
+    count = 0;
+    for (int i = 3; i < depths.size(); i++) {
+        if (depths[i - 3] < depths[i])
             count++;
     }
 
