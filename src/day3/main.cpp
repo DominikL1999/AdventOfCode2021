@@ -8,10 +8,7 @@
 #include <cassert>
 #include "../common/linereader.h"
 
-using std::cout;
-using std::endl;
-using std::string;
-using std::vector;
+using namespace std;
 
 int convert_to_decimal(vector<bool>& bin_number) {
     int n = 0;

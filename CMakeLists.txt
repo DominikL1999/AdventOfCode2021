@@ -4,6 +4,10 @@ project(AdventOfCode2021)
 
 add_subdirectory(src/common)
 
+add_executable(test_common src/common/main.cpp)
+target_link_libraries(test_common PUBLIC Common)
+target_include_directories(test_common PUBLIC "${PROJECT_SOURCE_DIR}/src/common")
+
 add_executable(day1 src/day1/main.cpp)
 target_link_libraries(day1 PUBLIC Common)
 target_include_directories(day1 PUBLIC "${PROJECT_SOURCE_DIR}/src/common")

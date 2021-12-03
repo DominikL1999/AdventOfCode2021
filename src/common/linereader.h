@@ -1,7 +1,12 @@
 #include <functional>
+#include <list>
 #include <string>
 
-namespace aoc 
+using namespace std;
+
+namespace aoc
 {
-    bool readInput(std::string const& fileName, std::function<void(const std::string&)> lineProcessor);
+    bool readInput(string const& fileName, function<void(const string&)> lineProcessor);
+
+    list<string> splitLine(const string& _line, const char delim = ' ');
 }

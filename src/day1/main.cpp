@@ -4,10 +4,7 @@
 #include <cassert>
 #include "../common/linereader.h"
 
-using std::cout;
-using std::endl;
-using std::ifstream;
-using std::vector;
+using namespace std;
 
 int main() {
     vector<int> depths;

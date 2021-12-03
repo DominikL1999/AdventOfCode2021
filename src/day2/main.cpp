@@ -7,10 +7,7 @@
 #include <cassert>
 #include "../common/linereader.h"
 
-using std::cout;
-using std::endl;
-using std::string;
-using std::vector;
+using namespace std;
 
 int main() {
     vector<std::tuple<string, int>> commands;
