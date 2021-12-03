@@ -56,11 +56,11 @@ int main() {
     string word;
     vector<vector<bool>> diagnostic_report;
     while(input >> word) {
-        vector<bool> line;
+        vector<bool> row;
         for (int i = 0; i < word.length(); i++) {
-            line.push_back((word[i] == '1') ? true : false);
+            row.push_back((word[i] == '1') ? true : false);
         }
-        diagnostic_report.push_back(line);
+        diagnostic_report.push_back(row);
     }
     assert(diagnostic_report.size() != 0);
     assert(diagnostic_report.front().size() != 0);
