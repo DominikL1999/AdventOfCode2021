@@ -20,6 +20,7 @@ int convert_to_decimal(vector<bool>& bin_number) {
     return n;
 }
 
+// Good Luck!
 int get_saturation(vector<vector<bool>>& diagnostic_report, bool diagnostic_criteria) {
     int n_cols = diagnostic_report.front().size();
     std::list<int> rows;
@@ -79,6 +80,8 @@ int main() {
 
     int epsilon = std::pow(2, n_cols) - 1 - gamma;
     int solution = gamma * epsilon;
+    cout << "gamma: " << gamma << endl;
+    cout << "epsilon: " << epsilon << endl;
     cout << "Solution 1: " << solution << endl;
     cout << "=================================" << endl;
 
