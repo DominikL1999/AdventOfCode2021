@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <list>
+#include <tuple>
 #include <cmath>
 #include <algorithm>
 #include <cassert>
@@ -20,8 +21,7 @@ int convert_to_decimal(vector<bool>& bin_number) {
     return n;
 }
 
-// Good Luck!
-int get_saturation(vector<vector<bool>>& diagnostic_report, bool diagnostic_criteria) {
+int get_saturation(vector<vector<bool>>& diagnostic_report, bool bit_criteria) {
     int n_cols = diagnostic_report.front().size();
     std::list<int> rows;
     for (int i = 0; i < diagnostic_report.size(); i++) {
@@ -31,18 +31,12 @@ int get_saturation(vector<vector<bool>>& diagnostic_report, bool diagnostic_crit
     for (int col = 0; col < n_cols; col++) {
         int count = std::count_if(rows.begin(), rows.end(), [col, diagnostic_report](auto row){return diagnostic_report[row][col] == 1;});
 
-        if (count * 2 >= rows.size()) {
-            rows.remove_if(
-                [col, diagnostic_report, diagnostic_criteria]
-                (auto row)
-                {return diagnostic_report[row][col] == (diagnostic_criteria != 1);});
-        }
-        else {
-            rows.remove_if(
-                [col, diagnostic_report, diagnostic_criteria]
-                (auto row)
-                {return diagnostic_report[row][col] == (diagnostic_criteria != 0);});
-        }
+        bool many_1s = count * 2 >= rows.size();
+
+        rows.remove_if(
+            [col, diagnostic_report, bit_criteria, many_1s]
+            (auto row)
+            {return (diagnostic_report[row][col] + many_1s + bit_criteria) % 2 == 0;});
 
         if (rows.size() == 1) break;
     }
