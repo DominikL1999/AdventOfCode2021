@@ -12,12 +12,8 @@ using namespace std;
 int main() {
     vector<std::tuple<string, int>> commands;
     aoc::readInput("day2_input.txt", [&commands](const std::string & line){
-        string direction;
-        int value;
-        int pos = line.find(' ');
-        direction = line.substr(0, pos);
-        value = stoi(line.substr(pos + 1, line.size() - pos - 1));
-        commands.push_back({direction, value});
+        auto words = aoc::splitLine(line);
+        commands.push_back({words[0], stoi(words[1])});
     });
 
     // Solution 1

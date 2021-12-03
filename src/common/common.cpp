@@ -1,8 +1,6 @@
 #include "common.h"
 
-#include <iostream>
 #include <fstream>
-#include <list>
 
 namespace aoc {
     bool readInput(string const& fileName, function<void(const string&)> lineProcessor) {
@@ -19,10 +17,8 @@ namespace aoc {
         return true;
     }
 
-    list<string> splitLine(const string& line, const char delim) {
-        list<string> words;
-        
-        cout << "line: \"" << line << "\"" << endl;
+    vector<string> splitLine(const string& line, const char delim) {
+        vector<string> words;
 
         size_t start = 0;
         size_t pos = line.find(delim);
