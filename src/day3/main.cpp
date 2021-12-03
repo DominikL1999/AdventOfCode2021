@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <vector>
 #include <list>
 #include <cmath>
@@ -80,7 +79,7 @@ int main() {
 
     int epsilon = std::pow(2, n_cols) - 1 - gamma;
     int solution = gamma * epsilon;
-    cout << "Solution: " << solution << endl;
+    cout << "Solution 1: " << solution << endl;
     cout << "=================================" << endl;
 
     // Solution 2
@@ -90,5 +89,5 @@ int main() {
     cout << "Oxygen Generator Rating: " << oxygen_generator_rating << endl;
     cout << "CO2 Scrubber Rating: " << co2_scrubber_rating << endl;
 
-    cout << "Solution: " << oxygen_generator_rating * co2_scrubber_rating << endl;
+    cout << "Solution 2: " << oxygen_generator_rating * co2_scrubber_rating << endl;
 }
