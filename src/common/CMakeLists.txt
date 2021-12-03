@@ -1,1 +1,1 @@
-add_library(Common linereader.cpp)
+add_library(Common common.cpp)

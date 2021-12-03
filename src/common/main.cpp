@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "../common/linereader.h"
+#include "../common/common.h"
 
 using namespace std;
 

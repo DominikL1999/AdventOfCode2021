@@ -1,4 +1,4 @@
-#include "linereader.h"
+#include "common.h"
 
 #include <iostream>
 #include <fstream>
