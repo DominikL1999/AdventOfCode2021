@@ -6,6 +6,7 @@
 #include <cmath>
 #include <algorithm>
 #include <cassert>
+#include "../common/linereader.h"
 
 using std::cout;
 using std::endl;
@@ -45,26 +46,21 @@ int get_saturation(vector<vector<bool>>& diagnostic_report, bool bit_criteria) {
 }
 
 int main() {
-    // input
-    std::ifstream input("day3_input.txt");
-
-    string word;
     vector<vector<bool>> diagnostic_report;
-    while(input >> word) {
+    aoc::readInput("day3_input.txt", [&diagnostic_report](const std::string & line){
         vector<bool> row;
-        for (int i = 0; i < word.length(); i++) {
-            row.push_back((word[i] == '1') ? true : false);
-        }
+        for (auto c : line)
+            row.push_back(c == '1' ? true : false);
         diagnostic_report.push_back(row);
-    }
+    });
+
     assert(diagnostic_report.size() != 0);
     assert(diagnostic_report.front().size() != 0);
     
     int n_cols = diagnostic_report.front().size();
 
-    int gamma = 0;
-
     // Solution 1
+    int gamma = 0;
     for (int col = 0; col <= n_cols != 0; col++) {
         int count = std::count_if(diagnostic_report.begin(), diagnostic_report.end(), [col](auto row){return row[col] == 1;});
 
@@ -77,7 +73,6 @@ int main() {
     cout << "gamma: " << gamma << endl;
     cout << "epsilon: " << epsilon << endl;
     cout << "Solution 1: " << solution << endl;
-    cout << "=================================" << endl;
 
     // Solution 2
     int oxygen_generator_rating = get_saturation(diagnostic_report, false);
@@ -85,6 +80,5 @@ int main() {
 
     cout << "Oxygen Generator Rating: " << oxygen_generator_rating << endl;
     cout << "CO2 Scrubber Rating: " << co2_scrubber_rating << endl;
-
     cout << "Solution 2: " << oxygen_generator_rating * co2_scrubber_rating << endl;
 }

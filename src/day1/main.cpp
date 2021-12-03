@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <cassert>
+#include "../common/linereader.h"
 
 using std::cout;
 using std::endl;
@@ -9,14 +10,8 @@ using std::ifstream;
 using std::vector;
 
 int main() {
-    // input
-    ifstream input("day1_input.txt");
-
     vector<int> depths;
-    int x;
-    while (input >> x) {
-        depths.push_back(x);
-    }
+    aoc::readInput("day1_input.txt", [&depths](const std::string & line){depths.push_back(stoi(line)); });
 
     // solution 1
     assert(depths.size() >= 1);
@@ -26,7 +21,7 @@ int main() {
             count++;
     }
 
-    cout << "Number of increases: " << count << endl;
+    cout << "Solution 1: " << count << endl;
 
     // solution 2
     assert(depths.size() >= 3);
@@ -36,5 +31,5 @@ int main() {
             count++;
     }
 
-    cout << "Number of increases: " << count << endl;
+    cout << "Solution 2: " << count << endl;
 }

@@ -5,6 +5,7 @@
 #include <vector>
 #include <tuple>
 #include <cassert>
+#include "../common/linereader.h"
 
 using std::cout;
 using std::endl;
@@ -12,30 +13,28 @@ using std::string;
 using std::vector;
 
 int main() {
-    // input
-    std::ifstream input("day2_input.txt");
-
-    string word;
-    int x;
     vector<std::tuple<string, int>> commands;
-    while (input >> word) {
-        input >> x;
-
-        commands.push_back({word, x});
-    }
+    aoc::readInput("day2_input.txt", [&commands](const std::string & line){
+        string direction;
+        int value;
+        int pos = line.find(' ');
+        direction = line.substr(0, pos);
+        value = stoi(line.substr(pos + 1, line.size() - pos - 1));
+        commands.push_back({direction, value});
+    });
 
     // Solution 1
     int horizontal_pos = 0;
     int depth = 0;
     for (int i = 0; i < commands.size(); i++) {
-        word = std::get<0>(commands[i]);
-        x = std::get<1>(commands[i]);
-        if (word == "forward")
-            horizontal_pos += x;
-        else if (word == "down")
-            depth += x;
-        else if (word == "up")
-            depth -= x;
+        string direction = std::get<0>(commands[i]);
+        int value = std::get<1>(commands[i]);
+        if (direction == "forward")
+            horizontal_pos += value;
+        else if (direction == "down")
+            depth += value;
+        else if (direction == "up")
+            depth -= value;
     }
 
     cout << "Horizontal depth: " << horizontal_pos << endl;
@@ -47,16 +46,16 @@ int main() {
     depth = 0;
     int aim = 0;
     for (int i = 0; i < commands.size(); i++) {
-        word = std::get<0>(commands[i]);
-        x = std::get<1>(commands[i]);
-        if (word == "forward"){
-            horizontal_pos += x;
-            depth += aim * x;
+        string direction = std::get<0>(commands[i]);
+        int value = std::get<1>(commands[i]);
+        if (direction == "forward"){
+            horizontal_pos += value;
+            depth += aim * value;
         }
-        else if (word == "down")
-            aim += x;
-        else if (word == "up")
-            aim -= x;
+        else if (direction == "down")
+            aim += value;
+        else if (direction == "up")
+            aim -= value;
     }
 
     cout << "Horizontal depth: " << horizontal_pos << endl;
