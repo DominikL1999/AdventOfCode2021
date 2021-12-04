@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <tuple>
+#include <list>
 #include <cassert>
 #include "../common/common.h"
 
@@ -9,14 +9,6 @@ using namespace std;
 
 int get_index(int board, int row, int col) {
     return board * 25 + row * 5 + col;
-}
-
-tuple<int, int, int> get_tuple(int index) {
-    int board = index % 25;
-    int row = (index - board * 25) % 5;
-    int col = index % 5;
-
-    return {board, row, col};
 }
 
 bool check_win(int* boards, int board, int row, int col) {
@@ -67,8 +59,6 @@ int get_solution(vector<int>& numbers, int* boards, int number_of_boards) {
                         // check for win
                         if (check_win(boards, b, r, c)) {
                             int sum = get_sum(boards, b);
-                            cout << "sum: " << sum << endl;
-                            cout << "n: " << n << endl;
                             return sum * n;
                         }
                     }
@@ -79,13 +69,56 @@ int get_solution(vector<int>& numbers, int* boards, int number_of_boards) {
     throw domain_error("No solution was found D:");
 }
 
+bool cross_number(int* boards, int board, int number) {
+    for (int r = 0; r < 5; r++) {
+        for (int c = 0; c < 5; c++) {
+            int index = get_index(board, r, c);
+
+            if (boards[index] == number) {
+                boards[index] = -1;
+                return (check_win(boards, board, r, c));
+            }
+        }
+    }
+
+    return false;
+}
+
+int get_loser(vector<int>& numbers, int* boards, int number_of_boards) {
+    list<int> boards_in_play;
+    for (int i = 0; i < number_of_boards; i++) boards_in_play.push_back(i);
+
+    int last_solution = -1;
+    for (auto number : numbers) {
+        list<int> boards_to_remove;
+
+        // cross number on all boards
+        for (auto b : boards_in_play) {
+            int board_won = cross_number(boards, b, number);
+
+            if (board_won) {
+                last_solution = get_sum(boards, b) * number;
+                boards_to_remove.push_back(b);
+            }
+        }
+
+        for (auto board : boards_to_remove) {
+            boards_in_play.remove(board);
+        }
+
+        if (boards_in_play.empty()) return last_solution;
+    }
+
+    throw domain_error("There is no solution D:");
+}
+
 int main() {
     ifstream input("day4_input.txt");
 
     int count = 0;
     aoc::readInput(input, [&count](auto s){count++;});
     int number_of_boards = (count - 1) / 6;
-    int* boards = new int(number_of_boards * 5 * 5);
+    int* boards = new int[number_of_boards * 5 * 5];
 
     input.clear();
     input.seekg(0);
@@ -112,8 +145,9 @@ int main() {
             getline(input, line);
             auto words = aoc::splitLine(line);
             for (int c = 0; c < 5; c++) {
+                int index = get_index(b, r, c);
                 int n = stoi(words[c]);
-                boards[get_index(b, r, c)] = n;
+                boards[index] = n;
             }
         }
     }
@@ -121,7 +155,11 @@ int main() {
     // Solution 1
     int solution1 = get_solution(numbers, boards, number_of_boards);
 
-    cout << "Solution 1: " << solution1 << endl;
+    // Solution 2
+    int solution2 = get_loser(numbers, boards, number_of_boards);
 
-    delete boards;
+    cout << "Solution 1: " << solution1 << endl;
+    cout << "Solution 2: " << solution2 << endl;
+
+    delete[] boards;
 }
