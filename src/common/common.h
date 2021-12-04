@@ -8,5 +8,7 @@ namespace aoc
 {
     bool readInput(string const& fileName, function<void(const string&)> lineProcessor);
 
-    vector<string> splitLine(const string& _line, const char delim = ' ');
+    bool readInput(ifstream& istream, function<void(const string&)> lineProcessor);
+
+    vector<string> splitLine(const string& _line, const string& delim = " ");
 }

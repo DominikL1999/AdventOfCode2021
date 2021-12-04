@@ -22,3 +22,8 @@ add_executable(day3 src/day3/main.cpp)
 target_link_libraries(day3 PUBLIC Common)
 target_include_directories(day3 PUBLIC "${PROJECT_SOURCE_DIR}/src/common")
 configure_file(src/day3/day3_input.txt day3_input.txt)
+
+add_executable(day4 src/day4/main.cpp)
+target_link_libraries(day4 PUBLIC Common)
+target_include_directories(day4 PUBLIC "${PROJECT_SOURCE_DIR}/src/common")
+configure_file(src/day4/day4_input.txt day4_input.txt)
