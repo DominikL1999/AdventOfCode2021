@@ -8,20 +8,8 @@
 
 using namespace std;
 
-// todo: try using multi-dimensional array
 int get_index(int x, int y, int max_x) {
     return y * (max_x + 1) + x;
-}
-
-void print_diagram(int* diagram, int max_x, int max_y) {
-    cout << "==============================" << endl;
-    for (int x = 0; x <= max_x; x++) {
-        for (int y = 0; y < max_y; y++) {
-            printf("%d ", diagram[get_index(x, y, max_x)]);
-        }
-        printf("%d\n", diagram[get_index(x, max_y, max_x)]);
-    }
-    cout << "==============================" << endl;
 }
 
 int main() {
@@ -55,33 +43,30 @@ int main() {
         int y1 = get<1>(line);
         int x2 = get<2>(line);
         int y2 = get<3>(line);
-        cout << flush;
+
         if (x1 == x2) {
-            // x is the same
-            if (y1 <= y2) {
-                // todo: simplify this
-                for (int y = y1; y <= y2; y++) {
-                    diagram[get_index(x1, y, max_x)]++;
-                }
-            }
-            else {
-                for (int y = y1; y >= y2; y--) {
-                    diagram[get_index(x1, y, max_x)]++;
-                }
+            int abs_y_diff = abs(y2 - y1);
+            int parity = (y2 - y1) / abs_y_diff; // either -1 or +1
+            for (int d = 0; d <= abs_y_diff; d++) {
+                int y = y1 + d * parity;
+                diagram[get_index(x1, y, max_x)]++;
             }
         }
         else if (y1 == y2) {
-            // y is the same
-            if (x1 <= x2) {
-                // todo: simplify this
-                for (int x = x1; x <= x2; x++) {
-                    diagram[get_index(x, y1, max_x)]++;
-                }
+            int abs_x_diff = abs(x2 - x1);
+            int parity = (x2 - x1) / abs_x_diff; // either -1 or +1
+            for (int d = 0; d <= abs_x_diff; d++) {
+                int x = x1 + d * parity;
+                diagram[get_index(x, y1, max_x)]++;
             }
-            else {
-                for (int x = x1; x >= x2; x--) {
-                    diagram[get_index(x, y1, max_x)]++;
-                }
+        }
+        else { // For Part 2
+            int abs_diff = abs(x2 - x1);
+            tuple<int, int> diff{(x2 - x1) / abs_diff, (y2 - y1) / abs_diff}; // unit vector
+            for (int d = 0; d <= abs_diff; d++) {
+                int x = x1 + get<0>(diff) * d;
+                int y = y1 + get<1>(diff) * d;
+                diagram[get_index(x, y, max_x)]++;
             }
         }
     }
@@ -94,7 +79,7 @@ int main() {
         }
     }
 
-    printf("Solution 1: %d", count);
+    printf("Solution: %d", count);
 
     delete[] diagram;
 }
