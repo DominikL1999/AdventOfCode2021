@@ -11,4 +11,6 @@ namespace aoc
     bool readInput(ifstream& istream, function<void(const string&)> lineProcessor);
 
     vector<string> splitLine(const string& _line, const string& delim = " ");
+
+    vector<int> splitLineInt(const string& _line, const string& delim = " ");
 }

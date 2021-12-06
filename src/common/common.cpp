@@ -44,21 +44,41 @@ namespace aoc {
 
         return words;
     }
+    
+    vector<int> splitLineInt(const string& _line, const string& delim) {
+        vector<int> ints;
+        string line{_line};
 
-    // vector<string> splitLine(const string& line, const char delim) {
-    //     vector<string> words;
+        size_t pos = 0;
+        string token;
+        while ((pos = line.find(delim)) != string::npos) {
+            token = line.substr(0, pos);
+            if (!token.empty())
+                ints.push_back(stoi(token));
+            line.erase(0, pos + delim.length());
+        }
+        if (!line.empty())
+            ints.push_back(stoi(line));
 
-    //     size_t start = 0;
-    //     size_t pos = line.find(delim);
-    //     while (pos <= line.size()) {
-    //         string word = line.substr(start, pos - start);
-    //         words.emplace_back(word);
-    //         start = pos + 1;
-    //         pos = line.find(delim, start);
-    //     }
+        return ints;
+    }
 
-    //     words.emplace_back(line.substr(start));
+    template<typename T>
+    vector<T> splitLineT(const string& _line, function<T(const string&)> f, const string& delim) {
+        vector<T> elements;
+        string line{_line};
 
-    //     return words;
-    // }
+        size_t pos = 0;
+        string token;
+        while ((pos = line.find(delim)) != string::npos) {
+            token = line.substr(0, pos);
+            if (!token.empty())
+                elements.push_back(f(token));
+            line.erase(0, pos + delim.length());
+        }
+        if (!line.empty())
+            elements.push_back(f(line));
+
+        return elements;
+    }
 }
