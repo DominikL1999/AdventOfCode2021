@@ -125,17 +125,19 @@ int main() {
     
     string line;
     getline(input, line);
-    auto words = aoc::splitLine(line, ",");
-    vector<int> numbers;
-    numbers.reserve(words.size());
-    for (auto word : words) {
-        try {
-            numbers.push_back(stoi(word));
-        } catch (const std::exception& e) {
-            cout << "exception was thrown for word \"" << word << "\": ";
-            throw e;
-        }
-    }
+
+    // vector<string> words = aoc::splitLineT(line, [](auto s){return s;}, ",");
+    // vector<int> numbers;
+    // numbers.reserve(words.size());
+    // for (auto word : words) {
+    //     try {
+    //         numbers.push_back(stoi(word));
+    //     } catch (const std::exception& e) {
+    //         cout << "exception was thrown for word \"" << word << "\": ";
+    //         throw e;
+    //     }
+    // }
+    vector<int> numbers = aoc::splitLineT<int>(line, [](const string& s) -> int {return stoi(s);}, ",");
 
     for (int b = 0; b < number_of_boards; b++) {
         string line;
@@ -143,10 +145,11 @@ int main() {
 
         for (int r = 0; r < 5; r++) {
             getline(input, line);
-            auto words = aoc::splitLine(line);
+            // auto words = aoc::splitLine(line);
+            auto ns = aoc::splitLineT<int>(line, [](const string& s) -> int {return stoi(s);}); // todo: rename
             for (int c = 0; c < 5; c++) {
                 int index = get_index(b, r, c);
-                int n = stoi(words[c]);
+                int n = ns[c];
                 boards[index] = n;
             }
         }

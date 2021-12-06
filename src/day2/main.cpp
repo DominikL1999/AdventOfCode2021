@@ -12,7 +12,7 @@ using namespace std;
 int main() {
     vector<std::tuple<string, int>> commands;
     aoc::readInput("day2_input.txt", [&commands](const std::string & line){
-        auto words = aoc::splitLine(line);
+        auto words = aoc::splitLineT<string>(line, [](auto s) -> string {return s;});
         commands.push_back({words[0], stoi(words[1])});
     });
 

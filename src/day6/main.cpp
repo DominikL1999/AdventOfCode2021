@@ -30,8 +30,7 @@ int main() {
     string line;
     getline(input, line);
 
-    // auto longs = aoc::splitLineT<long long>(line, [](auto s){return stoll(s); }, ",");
-    auto longs = aoc::splitLineLongLong(line, ",");
+    auto longs = aoc::splitLineT<long long>(line, [](auto s) -> long long {return stoll(s);}, ",");
 
     long long fish[LONG_BIRTH_CYCLE];
     for (long long i = 0; i < LONG_BIRTH_CYCLE; i++) fish[i] = 0;
@@ -47,6 +46,5 @@ int main() {
     for (long long i = 0; i < LONG_BIRTH_CYCLE; i++)
         count += fish[i];
     
-    // printf("Number of fish after %d days: %d\n", NUMBER_OF_DAYS, count);
-    cout << "count: " << count;
+    printf("Number of fish after %u days: %llu\n", NUMBER_OF_DAYS, count);
 }

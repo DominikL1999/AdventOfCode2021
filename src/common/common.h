@@ -10,12 +10,22 @@ namespace aoc
 
     bool readInput(ifstream& istream, function<void(const string&)> lineProcessor);
 
-    vector<string> splitLine(const string& _line, const string& delim = " ");
-
-    vector<int> splitLineInt(const string& _line, const string& delim = " ");
-
-    vector<long long> splitLineLongLong(const string& _line, const string& delim);
-
     template<typename T>
-    vector<T> splitLineT(const string& _line, function<T(const string&)> f, const string& delim);
+    vector<T> splitLineT(const string& _line, function<T(const string& s)> f, const string& delim = " ") {
+        vector<T> elements;
+        string line{_line};
+
+        size_t pos = 0;
+        string token;
+        while ((pos = line.find(delim)) != string::npos) {
+            token = line.substr(0, pos);
+            if (!token.empty())
+                elements.push_back(f(token));
+            line.erase(0, pos + delim.length());
+        }
+        if (!line.empty())
+            elements.push_back(f(line));
+
+        return elements;
+    }
 }
