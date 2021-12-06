@@ -62,6 +62,24 @@ namespace aoc {
 
         return ints;
     }
+    
+    vector<long long> splitLineLongLong(const string& _line, const string& delim) {
+        vector<long long> long_longs;
+        string line{_line};
+
+        size_t pos = 0;
+        string token;
+        while ((pos = line.find(delim)) != string::npos) {
+            token = line.substr(0, pos);
+            if (!token.empty())
+                long_longs.push_back(stoll(token));
+            line.erase(0, pos + delim.length());
+        }
+        if (!line.empty())
+            long_longs.push_back(stoll(line));
+
+        return long_longs;
+    }
 
     template<typename T>
     vector<T> splitLineT(const string& _line, function<T(const string&)> f, const string& delim) {

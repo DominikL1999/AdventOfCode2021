@@ -6,13 +6,16 @@
 using namespace std;
 
 // Constants
-const long NUMBER_OF_DAYS = 80;
-const long SHORT_BIRTH_CYCLE = 7;
-const long LONG_BIRTH_CYCLE = 9;
+const long long SHORT_BIRTH_CYCLE = 7;
+const long long LONG_BIRTH_CYCLE = 9;
+// Solution 1
+// const long long NUMBER_OF_DAYS = 80;
+// Solution 2
+const long long NUMBER_OF_DAYS = 256;
 
-void simulate_day(long* fish) {
-    long spawning_fish = fish[0];
-    for (long i = 1; i < LONG_BIRTH_CYCLE; i++) {
+void simulate_day(long long* fish) {
+    long long spawning_fish = fish[0];
+    for (long long i = 1; i < LONG_BIRTH_CYCLE; i++) {
         fish[i - 1] = fish[i];
     }
     fish[LONG_BIRTH_CYCLE - 1] = spawning_fish;
@@ -27,20 +30,23 @@ int main() {
     string line;
     getline(input, line);
 
-    auto ints = aoc::splitLineInt(line, ",");
-    long fish[LONG_BIRTH_CYCLE];
-    for (long i = 0; i < LONG_BIRTH_CYCLE; i++) fish[i] = 0;
+    // auto longs = aoc::splitLineT<long long>(line, [](auto s){return stoll(s); }, ",");
+    auto longs = aoc::splitLineLongLong(line, ",");
 
-    // Solution 1
-    for (auto f : ints)
+    long long fish[LONG_BIRTH_CYCLE];
+    for (long long i = 0; i < LONG_BIRTH_CYCLE; i++) fish[i] = 0;
+
+    // Solution
+    for (auto f : longs)
         fish[f]++;
     
-    for (long i = 0; i < NUMBER_OF_DAYS; i++)
+    for (long long i = 0; i < NUMBER_OF_DAYS; i++)
         simulate_day(fish);
     
-    long count = 0;
-    for (long i = 0; i < LONG_BIRTH_CYCLE; i++)
+    long long count = 0;
+    for (long long i = 0; i < LONG_BIRTH_CYCLE; i++)
         count += fish[i];
     
-    printf("Number of fish after %d days: %d\n", NUMBER_OF_DAYS, count);
+    // printf("Number of fish after %d days: %d\n", NUMBER_OF_DAYS, count);
+    cout << "count: " << count;
 }

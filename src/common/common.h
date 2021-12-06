@@ -13,4 +13,9 @@ namespace aoc
     vector<string> splitLine(const string& _line, const string& delim = " ");
 
     vector<int> splitLineInt(const string& _line, const string& delim = " ");
+
+    vector<long long> splitLineLongLong(const string& _line, const string& delim);
+
+    template<typename T>
+    vector<T> splitLineT(const string& _line, function<T(const string&)> f, const string& delim);
 }
