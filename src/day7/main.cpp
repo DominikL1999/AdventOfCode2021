@@ -4,22 +4,11 @@
 #include <cassert>
 #include "../common/common.h"
 
-// Solution 1
-int get_cost1(int dist) {
-    return dist;
-}
-
-// Solution 2
-int get_cost2(int dist) {
-
-}
-
 int main() {
     // Input
     fstream input("day7_input.txt");
     string line;
     getline(input, line);
-    cout << "line: " << line << endl;
     auto positions = aoc::splitLineT<int>(line, [](auto s) {return stoi(s);}, ",");
 
     assert(positions.size() != 0);
@@ -33,20 +22,38 @@ int main() {
         max_pos = max(max_pos, pos);
     }
     
-    // Solution 1
-    int length = max_pos - min_pos; // todo: rename
-    int* costs = new int[length]; // todo: rename
-    for (int i = 0; i < length; i++) costs[i] = 0;
+    // Solution
+    
+    // Calculate step_cost
+    int max_step = max_pos - min_pos + 1;
+    int* step_cost = new int[max_step];
+    step_cost[0] = 0; // cost of a step of size 0 is 0
+    // Note: step_cost[i] == (i + 1) nCr 2
+    for (int i = 1; i < max_step; i++) {
+        step_cost[i] = step_cost[i - 1] + i;
+    }
 
-    for (int i = 0; i < length; i++) {
-        for (auto pair : counted_positions)
-            costs[i] += (get_cost1(abs(pair.first - pair.second))) * pair.second;
+    int* costs = new int[max_step];
+    for (int i = 0; i < max_step; i++)
+        costs[i] = 0;
+
+    for (int i = 0; i < max_step; i++) {
+        for (auto pair : counted_positions) {
+            // // Solution 1
+            // costs[i] += (get_cost1(abs(pair.first - i))) * pair.second;
+
+            // Solution 2
+            costs[i] += (step_cost[abs(pair.first - i)]) * pair.second;
+        }
     }
 
     int min_cost = INT_MAX;
-    for (int i = 0; i < length; i++) {
+    for (int i = 0; i < max_step; i++) {
         min_cost = min(min_cost, costs[i]);
     }
 
     cout << "Minimum costs: " << min_cost << endl;
+
+    delete[] costs;
+    delete[] step_cost;
 }
