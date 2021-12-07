@@ -38,3 +38,8 @@ add_executable(day6 src/day6/main.cpp)
 target_link_libraries(day6 PUBLIC Common)
 target_include_directories(day6 PUBLIC "${PROJECT_SOURCE_DIR}/src/common")
 configure_file(src/day6/day6_input.txt day6_input.txt)
+
+add_executable(day7 src/day7/main.cpp)
+target_link_libraries(day7 PUBLIC Common)
+target_include_directories(day7 PUBLIC "${PROJECT_SOURCE_DIR}/src/common")
+configure_file(src/day7/day7_input.txt day7_input.txt)
