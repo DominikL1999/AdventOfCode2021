@@ -1,5 +1,7 @@
 # Build files
 BUILD/
+obj/
+.vs/
 
 # Prerequisites
 *.d
