@@ -25,16 +25,48 @@ namespace Day9
                 heightMap[lineNumber, i] = Convert.ToInt32(char.GetNumericValue(line[i]));
         }
 
-        private static bool IsLowPoint(int[,] heightMap, int x, int y)
+        private static bool IsLowPoint(int[,] heightMap, Position pos)
         {
-            List<Position> neighbours = GetValidNeighbours(heightMap.GetLength(0), heightMap.GetLength(1), x, y);
+            List<Position> neighbours = GetValidNeighbours(heightMap.GetLength(0), heightMap.GetLength(1), pos);
 
-            return neighbours.TrueForAll(pos => heightMap[pos.X, pos.Y] > heightMap[x, y]);
+            return neighbours.TrueForAll(p => heightMap[p.X, p.Y] > heightMap[pos.X, pos.Y]);
         }
 
-        private static int RiskLevel(int height)
+        private static List<Position> GetValidNeighbours(int maxX, int maxY, Position pos)
         {
-            return height + 1;
+            List<Position> neighbours = new()
+            {
+                new(pos.X, pos.Y - 1),
+                new(pos.X, pos.Y + 1),
+                new(pos.X - 1, pos.Y),
+                new(pos.X + 1, pos.Y)
+            };
+
+            neighbours.RemoveAll(p => p.X < 0 || p.X > maxX - 1
+                || p.Y < 0 || p.Y > maxY - 1);
+
+            return neighbours;
+        }
+
+        private static bool IsInBasin(int[,] basinMap, Position p)
+        {
+            return basinMap[p.X, p.Y] != -1;
+        }
+
+        private static int CreateBasin(int[,] basinMap, int[,] heightMap, Position pos, int basinNumber)
+        {
+            if (IsInBasin(basinMap, pos)) return 0;
+
+            basinMap[pos.X, pos.Y] = basinNumber;
+            List<Position> validNeighbours = GetValidNeighbours(basinMap.GetLength(0), basinMap.GetLength(1), pos);
+            validNeighbours.RemoveAll(p => heightMap[p.X, p.Y] < heightMap[pos.X, pos.Y] || heightMap[p.X, p.Y] == 9);
+
+            int basinSize = 1;
+            foreach (var neighbour in validNeighbours)
+            {
+                basinSize += CreateBasin(basinMap, heightMap, neighbour, basinNumber);
+            }
+            return basinSize;
         }
 
         private static void Main()
@@ -68,10 +100,10 @@ namespace Day9
             {
                 for (int y = 0; y < heightMap.GetLength(1); y++)
                 {
-                    if (IsLowPoint(heightMap, x, y))
+                    if (IsLowPoint(heightMap, new(x, y)))
                     {
                         lowPoints.Add(new(x, y));
-                        sum += RiskLevel(heightMap[x, y]);
+                        sum += heightMap[x, y] + 1;
                     }
                 }
             }
@@ -87,91 +119,22 @@ namespace Day9
                     basinMap[x, y] = -1;
                 }
             }
+
             // Create basins
             int basinNumber = 0;
+            SortedSet<int> basinSizes = new();
             foreach (var lowPoint in lowPoints)
-                CreateBasin(basinMap, heightMap, lowPoint.X, lowPoint.Y, basinNumber++);
-            //for (int x = 0; x < basinMap.GetLength(0); x++)
-            //{
-            //    for (int y = 0; y < basinMap.GetLength(1); y++)
-            //    {
-            //        if (heightMap[x, y] != 9 && !IsInBasin(basinMap, x, y))
-            //            CreateBasin(basinMap, heightMap, x, y, basinNumber++);
-            //    }
-            //}
-
-            // Get solution
-            Dictionary<int, int> basinSizes = new();
-            for (int x = 0; x < basinMap.GetLength(0); x++)
             {
-                for (int y = 0; y < basinMap.GetLength(1); y++)
-                {
-                    if (IsInBasin(basinMap, x, y))
-                    {
-                        if (basinSizes.ContainsKey(basinMap[x, y]))
-                        {
-                            basinSizes[basinMap[x, y]]++;
-                        }
-                        else basinSizes.Add(basinMap[x, y], 1);
-                    }
-                }
+                int basinSize = CreateBasin(basinMap, heightMap, lowPoint, basinNumber++);
+                basinSizes.Add(basinSize);
             }
-            PrintMap(basinMap);
-            var basinSizesSorted = basinSizes.ToList();
-            basinSizesSorted.Sort((pair1, pair2) => pair2.Value - pair1.Value);
 
-            var largestThree = basinSizesSorted.Take(3).Select(pair => pair.Value);
+            // Calculate solution
+            var largestThree = basinSizes.Reverse().Take(3);
             int solution = 1;
             foreach (var factor in largestThree)
                 solution *= factor;
             Console.WriteLine($"Solution: {solution}");
-        }
-
-        private static void PrintMap(int[,] map)
-        {
-            for (int x = 0; x < map.GetLength(0); x++)
-            {
-                for (int y = 0; y < map.GetLength(1); y++)
-                {
-                    Console.Write(map[x, y]);
-                }
-                Console.WriteLine();
-            }
-        }
-
-        private static bool IsInBasin(int[,] basinMap, int x, int y)
-        {
-            return basinMap[x, y] != -1;
-        }
-
-        private static void CreateBasin(int[,] basinMap, int[,] heightMap, int x, int y, int basinNumber)
-        {
-            if (IsInBasin(basinMap, x, y)) return;
-
-            basinMap[x, y] = basinNumber;
-            List<Position> validNeighbours = GetValidNeighbours(basinMap.GetLength(0), basinMap.GetLength(1), x, y);
-            validNeighbours.RemoveAll(pos => heightMap[pos.X, pos.Y] < heightMap[x, y] || heightMap[pos.X, pos.Y] == 9);
-
-            foreach (var neighbour in validNeighbours)
-            {
-                CreateBasin(basinMap, heightMap, neighbour.X, neighbour.Y, basinNumber);
-            }
-        }
-
-        private static List<Position> GetValidNeighbours(int maxX, int maxY, int x, int y)
-        {
-            List<Position> neighbours = new()
-            {
-                new(x, y - 1),
-                new(x, y + 1),
-                new(x - 1, y),
-                new(x + 1, y)
-            };
-
-            neighbours.RemoveAll(pos => pos.X < 0 || pos.X > maxX - 1
-                || pos.Y < 0 || pos.Y > maxY - 1);
-
-            return neighbours;
         }
     }
 }
