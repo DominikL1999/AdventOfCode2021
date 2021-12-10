@@ -72,8 +72,8 @@ namespace Day9
         private static void Main()
         {
             // Input
-            var xCount = File.ReadLines("day9_input.txt").Count();
-            using var streamReader = new StreamReader("day9_input.txt");
+            var xCount = File.ReadLines("input.txt").Count();
+            using var streamReader = new StreamReader("input.txt");
             string line = streamReader.ReadLine();
             int yCount = line.Length;
             int[,] heightMap = new int[xCount, yCount];
