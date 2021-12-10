@@ -35,17 +35,17 @@ namespace Day10
             using var streamReader = new StreamReader("input.txt");
             string line;
             int errorSum = 0;
-            List<long> completenessValues = new();
+            List<long> completionScores = new();
             while ((line = streamReader.ReadLine()) != null)
             {
                 if (IsCorrupt(line, out int position, out Stack<char> openBrackets))
                     // Part 1
                     errorSum += syntaxErrorScore[line[position]];
                 else // Part 2
-                    completenessValues.Add(CompletenessScore(openBrackets));
+                    completionScores.Add(CompletionScore(openBrackets));
             }
-            completenessValues.Sort();
-            long middleValue = completenessValues[(completenessValues.Count - 1) / 2];
+            completionScores.Sort();
+            long middleValue = completionScores[(completionScores.Count - 1) / 2];
             Console.WriteLine($"Sum of error values: {errorSum}");
             Console.WriteLine($"Middle error value: {middleValue}");
         }
@@ -70,7 +70,7 @@ namespace Day10
             return false;
         }
 
-        private static long CompletenessScore(Stack<char> openBrackets)
+        private static long CompletionScore(Stack<char> openBrackets)
         {
             long sum = 0;
             foreach (var bracket in openBrackets)
