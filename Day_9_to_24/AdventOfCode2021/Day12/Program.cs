@@ -66,11 +66,7 @@ namespace Day12
                     visitedSmallCaves.Remove(neighbour);
                 }
                 else if (smallCave == null)
-                {
-                    smallCave = neighbour;
-                    pathCount += GetPathCount2(neighbour, visitedSmallCaves, smallCave);
-                    smallCave = null;
-                }
+                    pathCount += GetPathCount2(neighbour, visitedSmallCaves, neighbour);
             }
             return pathCount;
         }
