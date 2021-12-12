@@ -25,13 +25,13 @@ namespace Day12
             }
 
             // Solution
-            int pathCount = GetPathCount(START, new());
+            int pathCount = PathCount(START, new());
             Console.WriteLine($"Number of paths from START to END: {pathCount}");
-            int pathCount2 = GetPathCount2(START, new(), null);
+            int pathCount2 = PathCount2(START, new(), false);
             Console.WriteLine($"2: Number of paths from START to END: {pathCount2}");
         }
 
-        private static int GetPathCount(string cave, HashSet<string> visitedSmallCaves)
+        private static int PathCount(string cave, HashSet<string> visitedSmallCaves)
         {
             if (cave == END) return 1;
 
@@ -39,18 +39,18 @@ namespace Day12
             foreach (var neighbour in neighbours[cave])
             {
                 if (IsBigCave(neighbour))
-                    pathCount += GetPathCount(neighbour, visitedSmallCaves);
+                    pathCount += PathCount(neighbour, visitedSmallCaves);
                 else if (!visitedSmallCaves.Contains(neighbour))
                 {
                     visitedSmallCaves.Add(neighbour);
-                    pathCount += GetPathCount(neighbour, visitedSmallCaves);
+                    pathCount += PathCount(neighbour, visitedSmallCaves);
                     visitedSmallCaves.Remove(neighbour);
                 }
             }
             return pathCount;
         }
 
-        private static int GetPathCount2(string cave, HashSet<string> visitedSmallCaves, string smallCave)
+        private static int PathCount2(string cave, HashSet<string> visitedSmallCaves, bool visitedTwice)
         {
             if (cave == END) return 1;
 
@@ -58,15 +58,15 @@ namespace Day12
             foreach (var neighbour in neighbours[cave])
             {
                 if (IsBigCave(neighbour))
-                    pathCount += GetPathCount2(neighbour, visitedSmallCaves, smallCave);
+                    pathCount += PathCount2(neighbour, visitedSmallCaves, visitedTwice);
                 else if (!visitedSmallCaves.Contains(neighbour))
                 {
                     visitedSmallCaves.Add(neighbour);
-                    pathCount += GetPathCount2(neighbour, visitedSmallCaves, smallCave);
+                    pathCount += PathCount2(neighbour, visitedSmallCaves, visitedTwice);
                     visitedSmallCaves.Remove(neighbour);
                 }
-                else if (smallCave == null)
-                    pathCount += GetPathCount2(neighbour, visitedSmallCaves, neighbour);
+                else if (!visitedTwice)
+                    pathCount += PathCount2(neighbour, visitedSmallCaves, true);
             }
             return pathCount;
         }
