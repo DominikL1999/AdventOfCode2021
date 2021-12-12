@@ -9,11 +9,12 @@ namespace Day12
         private const string START = "start";
         private const string END = "end";
 
+        private static Dictionary<string, List<string>> neighbours = new();
+
         private static void Main()
         {
             // Input
             string[] lines = File.ReadAllLines("input.txt");
-            Dictionary<string, List<string>> neighbours = new();
             foreach (var line in lines)
             {
                 string[] data = line.Split('-');
@@ -22,16 +23,11 @@ namespace Day12
             }
 
             // Solution
-            int pathCount = GetSolution(neighbours, START);
+            int pathCount = GetPathCount(START, new());
             Console.WriteLine($"Number of paths from START to END: {pathCount}");
         }
 
-        private static int GetSolution(Dictionary<string, List<string>> neighbours, string start)
-        {
-            return GetPathCount(neighbours, start, new());
-        }
-
-        private static int GetPathCount(Dictionary<string, List<string>> neighbours, string cave, HashSet<string> visitedSmallCaves)
+        private static int GetPathCount(string cave, HashSet<string> visitedSmallCaves)
         {
             if (cave == END) return 1;
 
@@ -39,11 +35,11 @@ namespace Day12
             foreach (var neighbour in neighbours[cave])
             {
                 if (IsBigCave(cave))
-                    pathCount += GetPathCount(neighbours, neighbour, visitedSmallCaves);
+                    pathCount += GetPathCount(neighbour, visitedSmallCaves);
                 else if (IsSmallCave(cave) && !visitedSmallCaves.Contains(cave))
                 {
                     visitedSmallCaves.Add(cave);
-                    pathCount += GetPathCount(neighbours, neighbour, visitedSmallCaves);
+                    pathCount += GetPathCount(neighbour, visitedSmallCaves);
                     visitedSmallCaves.Remove(cave);
                 }
             }
