@@ -9,7 +9,7 @@ namespace Day12
         private const string START = "start";
         private const string END = "end";
 
-        private static Dictionary<string, List<string>> neighbours = new();
+        private static readonly Dictionary<string, List<string>> neighbours = new();
 
         private static void Main()
         {
@@ -18,13 +18,17 @@ namespace Day12
             foreach (var line in lines)
             {
                 string[] data = line.Split('-');
-                AddNeighbour(neighbours, data[0], data[1]);
-                AddNeighbour(neighbours, data[1], data[0]);
+                if (data[1] != START)
+                    AddNeighbour(neighbours, data[0], data[1]);
+                if (data[0] != START)
+                    AddNeighbour(neighbours, data[1], data[0]);
             }
 
             // Solution
             int pathCount = GetPathCount(START, new());
             Console.WriteLine($"Number of paths from START to END: {pathCount}");
+            int pathCount2 = GetPathCount2(START, new(), null);
+            Console.WriteLine($"2: Number of paths from START to END: {pathCount2}");
         }
 
         private static int GetPathCount(string cave, HashSet<string> visitedSmallCaves)
@@ -34,13 +38,38 @@ namespace Day12
             int pathCount = 0;
             foreach (var neighbour in neighbours[cave])
             {
-                if (IsBigCave(cave))
+                if (IsBigCave(neighbour))
                     pathCount += GetPathCount(neighbour, visitedSmallCaves);
-                else if (IsSmallCave(cave) && !visitedSmallCaves.Contains(cave))
+                else if (!visitedSmallCaves.Contains(neighbour))
                 {
-                    visitedSmallCaves.Add(cave);
+                    visitedSmallCaves.Add(neighbour);
                     pathCount += GetPathCount(neighbour, visitedSmallCaves);
-                    visitedSmallCaves.Remove(cave);
+                    visitedSmallCaves.Remove(neighbour);
+                }
+            }
+            return pathCount;
+        }
+
+        private static int GetPathCount2(string cave, HashSet<string> visitedSmallCaves, string smallCave)
+        {
+            if (cave == END) return 1;
+
+            int pathCount = 0;
+            foreach (var neighbour in neighbours[cave])
+            {
+                if (IsBigCave(neighbour))
+                    pathCount += GetPathCount2(neighbour, visitedSmallCaves, smallCave);
+                else if (!visitedSmallCaves.Contains(neighbour))
+                {
+                    visitedSmallCaves.Add(neighbour);
+                    pathCount += GetPathCount2(neighbour, visitedSmallCaves, smallCave);
+                    visitedSmallCaves.Remove(neighbour);
+                }
+                else if (smallCave == null)
+                {
+                    smallCave = neighbour;
+                    pathCount += GetPathCount2(neighbour, visitedSmallCaves, smallCave);
+                    smallCave = null;
                 }
             }
             return pathCount;
@@ -49,11 +78,6 @@ namespace Day12
         private static bool IsBigCave(string cave)
         {
             return char.IsUpper(cave[0]);
-        }
-
-        private static bool IsSmallCave(string cave)
-        {
-            return char.IsLower(cave[0]);
         }
 
         private static void AddNeighbour(Dictionary<string, List<string>> neighbours, string cave, string neighbour)
