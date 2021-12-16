@@ -7,7 +7,7 @@ namespace Day16
 {
     internal class Program
     {
-        private static long versionSum = 0;
+        private static int versionSum = 0;
 
         private static void Main()
         {
@@ -31,8 +31,7 @@ namespace Day16
         private static long ParsePacket(string binStr, ref int start)
         {
             var header = ParseHeader(binStr, ref start);
-            long packetVersion = header.Item1;
-            long typeId = header.Item2;
+            int typeId = header.Item2;
 
             if (typeId == 4)
             {
@@ -41,7 +40,7 @@ namespace Day16
             else
             {
                 List<long> packetValues = new();
-                long typeLengthId = ParseTypeLengthId(binStr, ref start);
+                int typeLengthId = ParseTypeLengthId(binStr, ref start);
                 if (typeLengthId == 0)
                 {
                     long totalLength = ParseBinNumber(binStr, 15, ref start);
@@ -56,7 +55,7 @@ namespace Day16
                 }
                 else if (typeLengthId == 1)
                 {
-                    long numberOfPackets = ParseBinNumber(binStr, 11, ref start);
+                    int numberOfPackets = ParseBinNumber(binStr, 11, ref start);
                     for (int i = 0; i < numberOfPackets; i++)
                     {
                         long value = ParsePacket(binStr, ref start);
@@ -106,30 +105,29 @@ namespace Day16
                 value *= 16;
                 value += groupValue;
                 start += 4;
-                // do something with groupValue
             }
 
             return value;
         }
 
-        private static Tuple<long, long> ParseHeader(string binStr, ref int start)
+        private static Tuple<int, int> ParseHeader(string binStr, ref int start)
         {
-            long packetVersion = Convert.ToInt64(binStr.Substring(start, 3), 2);
+            int packetVersion = Convert.ToInt32(binStr.Substring(start, 3), 2);
             versionSum += packetVersion;
             start += 3;
-            long typeId = Convert.ToInt64(binStr.Substring(start, 3), 2);
+            int typeId = Convert.ToInt32(binStr.Substring(start, 3), 2);
             start += 3;
             return new(packetVersion, typeId);
         }
 
-        private static long ParseTypeLengthId(string binStr, ref int start)
+        private static int ParseTypeLengthId(string binStr, ref int start)
         {
             return ParseBinNumber(binStr, 1, ref start);
         }
 
-        private static long ParseBinNumber(string binStr, int length, ref int start)
+        private static int ParseBinNumber(string binStr, int length, ref int start)
         {
-            long number = Convert.ToInt64(binStr.Substring(start, length), 2);
+            int number = Convert.ToInt32(binStr.Substring(start, length), 2);
             start += length;
             return number;
         }
