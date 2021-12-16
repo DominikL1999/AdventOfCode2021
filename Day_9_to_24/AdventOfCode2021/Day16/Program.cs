@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Day16
 {
     internal class Program
     {
-        private static int versionSum = 0;
+        private static long versionSum = 0;
 
         private static void Main()
         {
@@ -13,88 +15,121 @@ namespace Day16
             foreach (var line in lines)
             {
                 string packet = HexToBin(line);
-                Console.WriteLine(packet);
-                ParsePacketFromStart(packet);
+                long value = ParsePacketFromStart(packet);
+                Console.WriteLine($"{packet} -> {value}");
             }
             Console.WriteLine($"Sum of the packet versions: {versionSum}");
         }
 
-        private static void ParsePacketFromStart(string packet)
+        private static long ParsePacketFromStart(string packet)
         {
             int start = 0;
-            ParsePacket(packet, ref start);
+            return ParsePacket(packet, ref start);
             // start is now at position of the first tailing 0
         }
 
-        private static void ParsePacket(string binStr, ref int start)
+        private static long ParsePacket(string binStr, ref int start)
         {
-            Console.WriteLine($"ParsePacket, {binStr}, start: {start}");
             var header = ParseHeader(binStr, ref start);
-            int packetVersion = header.Item1;
-            int typeId = header.Item2;
+            long packetVersion = header.Item1;
+            long typeId = header.Item2;
 
             if (typeId == 4)
             {
-                ParseLiteralValuePayload(binStr, ref start);
+                return ParseLiteralValuePayload(binStr, ref start);
             }
             else
             {
-                int typeLengthId = ParseTypeLengthId(binStr, ref start);
+                List<long> packetValues = new();
+                long typeLengthId = ParseTypeLengthId(binStr, ref start);
                 if (typeLengthId == 0)
                 {
-                    int totalLength = ParseBinNumber(binStr, 15, ref start);
+                    long totalLength = ParseBinNumber(binStr, 15, ref start);
                     int firstStart = start;
                     while (firstStart + totalLength > start)
                     {
-                        ParsePacket(binStr, ref start);
+                        long value = ParsePacket(binStr, ref start);
+                        packetValues.Add(value);
                         if (start > firstStart + totalLength)
                             throw new ApplicationException($"start: {start}, firstStart: {firstStart}, totalLength: {totalLength}");
                     }
                 }
                 else if (typeLengthId == 1)
                 {
-                    int numberOfPackets = ParseBinNumber(binStr, 11, ref start);
+                    long numberOfPackets = ParseBinNumber(binStr, 11, ref start);
                     for (int i = 0; i < numberOfPackets; i++)
-                        ParsePacket(binStr, ref start);
+                    {
+                        long value = ParsePacket(binStr, ref start);
+                        packetValues.Add(value);
+                    }
                 }
                 else
                     throw new ApplicationException($"Invalid type length id found: {typeLengthId}");
+
+                // do something using the values found in the packets
+                // corrsponding to the type id
+                return GetPacketValue(typeId, packetValues);
             }
         }
 
-        private static void ParseLiteralValuePayload(string binStr, ref int start)
+        private static long GetPacketValue(long typeId, List<long> packetValues)
+        {
+            if (typeId == 0)
+                return packetValues.Sum();
+            else if (typeId == 1)
+                return packetValues.Aggregate((a, b) => a * b);
+            else if (typeId == 2)
+                return packetValues.Min();
+            else if (typeId == 3)
+                return packetValues.Max();
+            else if (typeId == 5)
+                return Convert.ToInt64(packetValues[0] > packetValues[1]);
+            else if (typeId == 6)
+                return Convert.ToInt64(packetValues[0] < packetValues[1]);
+            else if (typeId == 7)
+                return Convert.ToInt64(packetValues[0] == packetValues[1]);
+            else
+                throw new ApplicationException("D:");
+        }
+
+        private static long ParseLiteralValuePayload(string binStr, ref int start)
         {
             bool lastGroup = false;
+            long value = 0;
             while (!lastGroup)
             {
                 if (binStr[start] == '0')
                     lastGroup = true;
 
                 start++;
-                int groupValue = Convert.ToInt32(binStr.Substring(start, 4), 2);
+                long groupValue = Convert.ToInt64(binStr.Substring(start, 4), 2);
+                value *= 16;
+                value += groupValue;
                 start += 4;
                 // do something with groupValue
             }
+
+            return value;
         }
 
-        private static Tuple<int, int> ParseHeader(string binStr, ref int start)
+        private static Tuple<long, long> ParseHeader(string binStr, ref int start)
         {
-            int packetVersion = Convert.ToInt32(binStr.Substring(start, 3), 2);
+            long packetVersion = Convert.ToInt64(binStr.Substring(start, 3), 2);
             versionSum += packetVersion;
             start += 3;
-            int typeId = Convert.ToInt32(binStr.Substring(start, 3), 2);
+            long typeId = Convert.ToInt64(binStr.Substring(start, 3), 2);
             start += 3;
             return new(packetVersion, typeId);
         }
 
-        private static int ParseTypeLengthId(string binStr, ref int start)
+        private static long ParseTypeLengthId(string binStr, ref int start)
         {
             return ParseBinNumber(binStr, 1, ref start);
         }
 
-        private static int ParseBinNumber(string binStr, int length, ref int start)
+        private static long ParseBinNumber(string binStr, int length, ref int start)
         {
-            int number = Convert.ToInt32(binStr.Substring(start, length), 2);
+            long number = Convert.ToInt64(binStr.Substring(start, length), 2);
             start += length;
             return number;
         }
@@ -105,7 +140,7 @@ namespace Day16
 
             for (int i = 0; i < hexStr.Length; i++)
             {
-                int value = Convert.ToInt32(hexStr[i].ToString(), 16);
+                long value = Convert.ToInt64(hexStr[i].ToString(), 16);
                 string binPart = Convert.ToString(value, 2).PadLeft(4, '0');
                 binStr += binPart;
             }
