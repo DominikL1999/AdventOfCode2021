@@ -18,11 +18,13 @@ namespace Day18
                 line => line.Select(
                     c => GetDigit(c)).ToList()).ToList();
 
+            foreach (var number in snailNumbers)
+            {
+                ReduceSnailNumber(number);
+            }
+
             SnailNumber solution = snailNumbers.Aggregate((n1, n2) =>
             {
-                ReduceSnailNumber(n1);
-                ReduceSnailNumber(n2);
-
                 SnailNumber n3 = AddSnailNumbers(n1, n2);
                 ReduceSnailNumber(n3);
 
@@ -32,6 +34,25 @@ namespace Day18
             Console.WriteLine($"solution: ");
             PrintSnailNumber(solution);
             Console.WriteLine($"Magnitude: {Magnitude(solution)}");
+
+            Console.WriteLine("=======================================");
+
+            int largestMagnitude = int.MinValue;
+            for (int i = 0; i < snailNumbers.Count; i++)
+            {
+                for (int j = 0; j < snailNumbers.Count; j++)
+                {
+                    if (i != j)
+                    {
+                        SnailNumber sum = AddSnailNumbers(snailNumbers[i], snailNumbers[j]);
+                        ReduceSnailNumber(sum);
+                        int magnitude = Magnitude(sum);
+                        largestMagnitude = Math.Max(largestMagnitude, magnitude);
+                    }
+                }
+            }
+
+            Console.WriteLine($"Largest magnitude: {largestMagnitude}");
         }
 
         private static SnailNumber AddSnailNumbers(SnailNumber n1, SnailNumber n2)
@@ -50,11 +71,14 @@ namespace Day18
             return AddSnailNumbers(new() { leftPart }, new() { rightPart });
         }
 
-        private static void ReduceSnailNumber(SnailNumber number)
+        private static bool ReduceSnailNumber(SnailNumber number)
         {
+            bool reduced = false;
             while (Algorithm.TryOperations(number, new() { TryExplode, TrySplit }))
             {
+                reduced = true;
             }
+            return reduced;
         }
 
         private static bool TryExplode(SnailNumber number)
@@ -62,14 +86,14 @@ namespace Day18
             int depth = 0;
             for (int i = 0; i < number.Count; i++)
             {
-                if (number[i] == GetDigit('[')) // todo: refactor
+                if (number[i] == GetDigit('['))
                     depth++;
                 else if (number[i] == GetDigit(']'))
                     depth--;
                 else
                 { // is number
                     if (depth >= 5)
-                    {   // according to problem specification this is always a pair
+                    {   // according to problem specification this is always a pair (no check required)
                         // -> explode this number
                         bool stop = false;
                         for (int j = i - 1; j >= 0 && !stop; j--)
@@ -125,10 +149,11 @@ namespace Day18
 
         private static int Magnitude(SnailNumber number)
         {
-            while (Algorithm.TryOperations(number, new() { ReplaceLeftmostPair }))
+            SnailNumber copy = new(number);
+            while (Algorithm.TryOperations(copy, new() { ReplaceLeftmostPair }))
             { }
 
-            return number.Single();
+            return copy.Single();
         }
 
         private static bool ReplaceLeftmostPair(SnailNumber number)
